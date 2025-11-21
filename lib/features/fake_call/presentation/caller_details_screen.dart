@@ -17,6 +17,7 @@ class CallerDetailsScreen extends StatefulWidget {
 }
 
 class _CallerDetailsScreenState extends State<CallerDetailsScreen> {
+  final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _numberController = TextEditingController();
   final _imagePicker = ImagePicker();
@@ -48,14 +49,14 @@ class _CallerDetailsScreenState extends State<CallerDetailsScreen> {
 
   void _onNameChanged() {
     context.read<FakeCallBloc>().add(
-          FakeCallEvent.setCallerName(name: _nameController.text),
-        );
+      FakeCallEvent.setCallerName(name: _nameController.text),
+    );
   }
 
   void _onNumberChanged() {
     context.read<FakeCallBloc>().add(
-          FakeCallEvent.setCallerNumber(number: _numberController.text),
-        );
+      FakeCallEvent.setCallerNumber(number: _numberController.text),
+    );
   }
 
   Future<void> _pickImageFromGallery() async {
@@ -65,16 +66,16 @@ class _CallerDetailsScreenState extends State<CallerDetailsScreen> {
 
     if (image != null) {
       context.read<FakeCallBloc>().add(
-            FakeCallEvent.setCallerImage(imagePath: image.path),
-          );
+        FakeCallEvent.setCallerImage(imagePath: image.path),
+      );
     }
   }
 
   void _usePresetAvatar() {
     // Use null for preset avatar (will show default avatar)
     context.read<FakeCallBloc>().add(
-          const FakeCallEvent.setCallerImage(imagePath: null),
-        );
+      const FakeCallEvent.setCallerImage(imagePath: null),
+    );
   }
 
   @override
@@ -107,7 +108,6 @@ class _CallerDetailsScreenState extends State<CallerDetailsScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                
               ],
             ),
             toolbarHeight: 70.h,
@@ -184,10 +184,7 @@ class _CallerDetailsScreenState extends State<CallerDetailsScreen> {
               child: imagePath != null
                   ? ClipRRect(
                       borderRadius: BorderRadius.circular(20.r),
-                      child: Image.file(
-                        File(imagePath),
-                        fit: BoxFit.cover,
-                      ),
+                      child: Image.file(File(imagePath), fit: BoxFit.cover),
                     )
                   : Icon(
                       Icons.account_circle,
@@ -219,80 +216,106 @@ class _CallerDetailsScreenState extends State<CallerDetailsScreen> {
             child: Icon(icon, size: 28.sp),
           ),
           SizedBox(height: 8.h),
-          Text(
-            label,
-            style: TextStyle(fontSize: 14.sp),
-          ),
+          Text(label, style: TextStyle(fontSize: 14.sp)),
         ],
       ),
     );
   }
 
   Widget _buildFakeCallerSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Set up a fake caller',
-          style: TextStyle(
-            fontSize: 16.sp,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Set up a fake caller',
+            style: TextStyle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
           ),
-        ),
-        SizedBox(height: 16.h),
+          SizedBox(height: 16.h),
 
-        // Name input
-        TextField(
-          controller: _nameController,
-          decoration: InputDecoration(
-            hintText: 'Enter name',
-            filled: true,
-            fillColor: Colors.grey[100],
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12.r),
-              borderSide: BorderSide.none,
-            ),
-            contentPadding: EdgeInsets.symmetric(
-              horizontal: 20.w,
-              vertical: 16.h,
+          // Name input
+          TextFormField(
+            controller: _nameController,
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Please enter a caller name';
+              }
+              if (value.trim().length < 2) {
+                return 'Name must be at least 2 characters';
+              }
+              return null;
+            },
+            decoration: InputDecoration(
+              hintText: 'Enter name',
+              filled: true,
+              fillColor: Colors.grey[100],
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.r),
+                borderSide: BorderSide.none,
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.r),
+                borderSide: BorderSide(color: Colors.red, width: 1),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.r),
+                borderSide: BorderSide(color: Colors.red, width: 2),
+              ),
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 20.w,
+                vertical: 16.h,
+              ),
             ),
           ),
-        ),
-        SizedBox(height: 12.h),
+          SizedBox(height: 12.h),
 
-        // Number input
-        TextField(
-          controller: _numberController,
-          keyboardType: TextInputType.phone,
-          decoration: InputDecoration(
-            hintText: 'Enter number',
-            filled: true,
-            fillColor: Colors.grey[100],
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12.r),
-              borderSide: BorderSide.none,
+          // Number input
+          TextFormField(
+            controller: _numberController,
+            keyboardType: TextInputType.phone,
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Please enter a phone number';
+              }
+              // Remove all non-digit characters for validation
+              final digitsOnly = value.replaceAll(RegExp(r'[^0-9]'), '');
+              if (digitsOnly.length < 10) {
+                return 'Phone number must be at least 10 digits';
+              }
+              if (digitsOnly.length > 15) {
+                return 'Phone number cannot exceed 15 digits';
+              }
+              return null;
+            },
+            decoration: InputDecoration(
+              hintText: 'Enter number',
+              filled: true,
+              fillColor: Colors.grey[100],
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.r),
+                borderSide: BorderSide.none,
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.r),
+                borderSide: BorderSide(color: Colors.red, width: 1),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.r),
+                borderSide: BorderSide(color: Colors.red, width: 2),
+              ),
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 20.w,
+                vertical: 16.h,
+              ),
             ),
-            contentPadding: EdgeInsets.symmetric(
-              horizontal: 20.w,
-              vertical: 16.h,
-            ),
-            // suffixIcon: Container(
-            //   margin: EdgeInsets.all(8.w),
-            //   padding: EdgeInsets.all(8.w),
-            //   decoration: BoxDecoration(
-            //     color: Colors.white,
-            //     borderRadius: BorderRadius.circular(8.r),
-            //   ),
-            //   child: Icon(
-            //     Icons.contacts,
-            //     color: Colors.black87,
-            //     size: 20.sp,
-            //   ),
-            // ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -334,8 +357,8 @@ class _CallerDetailsScreenState extends State<CallerDetailsScreen> {
           _selectedTimerSeconds = seconds;
         });
         context.read<FakeCallBloc>().add(
-              FakeCallEvent.setTimerDuration(seconds: seconds),
-            );
+          FakeCallEvent.setTimerDuration(seconds: seconds),
+        );
       },
       child: Container(
         width: (MediaQuery.of(context).size.width - 60.w) / 2,
@@ -344,9 +367,7 @@ class _CallerDetailsScreenState extends State<CallerDetailsScreen> {
           color: isSelected ? AppColorScheme.primaryColor : Colors.white,
           borderRadius: BorderRadius.circular(25.r),
           border: Border.all(
-            color: isSelected
-                ? AppColorScheme.primaryColor
-                : Colors.grey[300]!,
+            color: isSelected ? AppColorScheme.primaryColor : Colors.grey[300]!,
           ),
         ),
         child: Center(
@@ -383,10 +404,11 @@ class _CallerDetailsScreenState extends State<CallerDetailsScreen> {
           color: Colors.transparent,
           child: InkWell(
             onTap: () {
-              context.read<FakeCallBloc>().add(
-                    const FakeCallEvent.saveCallerDetails(),
-                  );
-              Navigator.of(context).pop();
+              if (_formKey.currentState?.validate() ?? false) {
+                context.read<FakeCallBloc>().add(
+                  const FakeCallEvent.saveCallerDetails(),
+                );
+              }
             },
             borderRadius: BorderRadius.circular(12.r),
             child: Center(
