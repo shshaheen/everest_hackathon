@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import '../../../core/dependency_injection/di_container.dart';
 import '../../../core/theme/color_scheme.dart';
 import '../../../shared/widgets/custom_app_bar.dart';
@@ -10,7 +9,7 @@ import '../bloc/fake_call_event.dart';
 import '../bloc/fake_call_state.dart';
 import 'caller_details_screen.dart';
 import 'incoming_call_screen.dart';
-import 'in_call_screen.dart';
+
 
 /// Fake Call screen - Main screen
 class FakeCallScreen extends StatelessWidget {
