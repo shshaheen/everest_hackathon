@@ -19,36 +19,6 @@ class ProfileScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Load phone number from preferences; fall back to the hardcoded number
-            FutureBuilder<String?>(
-              future: DIContainer.instance
-                  .get<AppPreferencesService>()
-                  .getUserPhoneNumber(),
-              builder: (context, snapshot) {
-                final phone = snapshot.connectionState == ConnectionState.done
-                    ? (snapshot.data ?? '+919392235952')
-                    : '+919392235952';
-                // Format phone like +91 9392235952 -> +91 93922 35952 or keep your original formatting:
-                final displayPhone = phone.length > 3
-                    ? "${phone.substring(0, 3)} ${phone.substring(3)}"
-                    : phone;
-                return ProfileHeader(
-                  phoneNumber: displayPhone,
-                );
-              },
-            ),
-            const SizedBox(height: 20),
-            const ProfileActionButtons(),
-            const SizedBox(height: 20),
-            const SettingsCard(),
-            const SizedBox(height: 250),
-            const AppVersionFooter(),
-            const SizedBox(height: 20),
-          ],
-      backgroundColor: const Color(0xFFF0F0F6),
       body: Stack(
         children:[ SingleChildScrollView(
           child: Column(
@@ -60,16 +30,19 @@ class ProfileScreen extends StatelessWidget {
                     .getUserPhoneNumber(),
                 builder: (context, snapshot) {
                   final phone = snapshot.connectionState == ConnectionState.done
-                      ? (snapshot.data ?? '+91 9392235952')
-                      : '+91 9392235952';
+                      ? (snapshot.data ?? '+919392235952')
+                      : '+919392235952';
+                // Format phone like +91 9392235952 -> +91 93922 35952 or keep your original formatting:
+                final displayPhone = phone.length > 3
+                    ? "${phone.substring(0, 3)} ${phone.substring(3)}"
+                    : phone;
                   return ProfileHeader(
-                    phoneNumber: "${phone.substring(0, 3)} ${phone.substring(3)}",
+                    phoneNumber: displayPhone,
                   );
-        
-                },
+                        },
               ),
               const SizedBox(height: 20),
-              ProfileActionButtons(),
+              const ProfileActionButtons(),
               const SizedBox(height: 20),
               const SettingsCard(),
               const SizedBox(height: 250),

@@ -52,6 +52,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
@@ -103,8 +104,6 @@ class _ContactsScreenState extends State<ContactsScreen> {
                       state.contacts.isEmpty) {
                     _hasContacts = false;
                   }
-                  // If search is active but we previously had contacts, keep flag true
-                  // (don't reset _hasContacts to false)
                 } else if (state is ContactsSuccess) {
                   // Handle success state similarly
                   if (_searchController.text.isEmpty &&
@@ -235,12 +234,9 @@ class _ContactsScreenState extends State<ContactsScreen> {
     return BlocListener<ContactsBloc, ContactsState>(
       bloc: _contactsBloc,
       listener: (context, state) {
-        // Show warning snackbar for duplicate/already exists errors
         if (state is ContactsWarning) {
           _showSnackbar(state.message, isSuccess: false);
-        }
-        // Show success snackbar when contact operation is successful
-        else if (state is ContactsSuccess) {
+        } else if (state is ContactsSuccess) {
           _showSnackbar(state.message, isSuccess: true);
         }
       },
@@ -274,59 +270,6 @@ class _ContactsScreenState extends State<ContactsScreen> {
               itemCount: contacts.length,
               itemBuilder: (context, index) {
                 final contact = contacts[index];
-          if (state is ContactsInitial || state is ContactsLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is ContactsLoaded) {
-            if (state.contacts.isEmpty) {
-              // If user is searching and no match found, show specialized message
-              final searching = _searchController.text.isNotEmpty;
-              return _buildEmptyState(searching: searching);
-            }
-            return ListView.builder(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              itemCount: state.contacts.length,
-              itemBuilder: (context, index) {
-                final contact = state.contacts[index];
-                return ContactCard(
-                  contact: contact,
-                  onCall: () => _callContact(contact),
-                  onMessage: () => _messageContact(contact),
-                  onEdit: () => _editContact(contact),
-                  onDelete: () => _deleteContact(contact),
-                );
-              },
-            );
-          } else if (state is ContactsSuccess) {
-            // Show the contacts list after successful operation
-            if (state.contacts.isEmpty) {
-              final searching = _searchController.text.isNotEmpty;
-              return _buildEmptyState(searching: searching);
-            }
-            return ListView.builder(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              itemCount: state.contacts.length,
-              itemBuilder: (context, index) {
-                final contact = state.contacts[index];
-                return ContactCard(
-                  contact: contact,
-                  onCall: () => _callContact(contact),
-                  onMessage: () => _messageContact(contact),
-                  onEdit: () => _editContact(contact),
-                  onDelete: () => _deleteContact(contact),
-                );
-              },
-            );
-          } else if (state is ContactsWarning) {
-            // Show the contacts list even when there's a warning
-            if (state.contacts.isEmpty) {
-              final searching = _searchController.text.isNotEmpty;
-              return _buildEmptyState(searching: searching);
-            }
-            return ListView.builder(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              itemCount: state.contacts.length,
-              itemBuilder: (context, index) {
-                final contact = state.contacts[index];
                 return ContactCard(
                   contact: contact,
                   onCall: () => _callContact(contact),
@@ -480,10 +423,6 @@ class _ContactsScreenState extends State<ContactsScreen> {
             fontSize: 16,
             color: cs.onSurfaceVariant,
           ),
-        ),
-        content: Text(
-          'Are you sure you want to delete ${contact.name}?',
-          style: TextStyle(fontSize: 16, color: Colors.black87),
         ),
         actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         actions: [
