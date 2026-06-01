@@ -268,105 +268,106 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+
   // Build SOS button for the nav bar
   // Handle SOS button tap with emergency contacts check
-  Future<void> _handleSosButtonTap() async {
-    // Show loading dialog
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
+  // Future<void> _handleSosButtonTap() async {
+  //   // Show loading dialog
+  //   showDialog(
+  //     context: context,
+  //     barrierDismissible: false,
+  //     builder: (context) => const Center(
+  //       child: CircularProgressIndicator(),
+  //     ),
+  //   );
     
-    try {
-      // Get user ID and check for emergency contacts
-      final preferencesService = di.sl<AppPreferencesService>();
-      final userId = await preferencesService.getUserId();
+  //   try {
+  //     // Get user ID and check for emergency contacts
+  //     final preferencesService = di.sl<AppPreferencesService>();
+  //     final userId = await preferencesService.getUserId();
       
-      if (userId == null) {
-        Navigator.of(context).pop(); // Close loading dialog
-        _showErrorDialog('User not authenticated. Please login again.');
-        return;
-      }
+  //     if (userId == null) {
+  //       Navigator.of(context).pop(); // Close loading dialog
+  //       _showErrorDialog('User not authenticated. Please login again.');
+  //       return;
+  //     }
       
-      // Check if user has emergency contacts
-      final sosRemoteSource = di.sl<SosRemoteSource>();
-      final contactsResponse = await sosRemoteSource.getEmergencyContacts(userId);
+  //     // Check if user has emergency contacts
+  //     final sosRemoteSource = di.sl<SosRemoteSource>();
+  //     final contactsResponse = await sosRemoteSource.getEmergencyContacts(userId);
       
-      Navigator.of(context).pop(); // Close loading dialog
+  //     Navigator.of(context).pop(); // Close loading dialog
       
-      if (!contactsResponse.success || contactsResponse.data.isEmpty) {
-        // Show popup to add emergency contacts
-        _showEmergencyContactsDialog();
-      } else {
-        // Navigate to SOS screen if contacts exist
-        if (mounted) {
-          context.push(AppRoutes.sos);
-        }
-      }
-    } catch (e) {
-      Navigator.of(context).pop(); // Close loading dialog
-      _showErrorDialog('Failed to check emergency contacts. Please try again.');
-    }
-  }
+  //     if (!contactsResponse.success || contactsResponse.data.isEmpty) {
+  //       // Show popup to add emergency contacts
+  //       _showEmergencyContactsDialog();
+  //     } else {
+  //       // Navigate to SOS screen if contacts exist
+  //       if (mounted) {
+  //         context.push(AppRoutes.sos);
+  //       }
+  //     }
+  //   } catch (e) {
+  //     Navigator.of(context).pop(); // Close loading dialog
+  //     _showErrorDialog('Failed to check emergency contacts. Please try again.');
+  //   }
+  // }
   
-  // Show dialog when no emergency contacts are found
-  void _showEmergencyContactsDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        icon: Icon(
-          Icons.contacts,
-          color: Colors.orange,
-          size: 64.sp,
-        ),
-        title: const Text('No Emergency Contacts'),
-        content: const Text('You need to add emergency contacts before using SOS. Please add at least one contact to continue.'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              // Navigate to emergency contacts screen
-              context.push(AppRoutes.emergencyContacts);
-            },
-            child: const Text('Add Emergency Contacts'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text('Cancel'),
-          ),
-        ],
-      ),
-    );
-  }
+  // // Show dialog when no emergency contacts are found
+  // void _showEmergencyContactsDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       icon: Icon(
+  //         Icons.contacts,
+  //         color: Colors.orange,
+  //         size: 64.sp,
+  //       ),
+  //       title: const Text('No Emergency Contacts'),
+  //       content: const Text('You need to add emergency contacts before using SOS. Please add at least one contact to continue.'),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () {
+  //             Navigator.of(context).pop();
+  //             // Navigate to emergency contacts screen
+  //             context.push(AppRoutes.emergencyContacts);
+  //           },
+  //           child: const Text('Add Emergency Contacts'),
+  //         ),
+  //         TextButton(
+  //           onPressed: () {
+  //             Navigator.of(context).pop();
+  //           },
+  //           child: const Text('Cancel'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
   
-  // Show error dialog
-  void _showErrorDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        icon: Icon(
-          Icons.error,
-          color: Colors.red,
-          size: 64.sp,
-        ),
-        title: const Text('Error'),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
+  // // Show error dialog
+  // void _showErrorDialog(String message) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       icon: Icon(
+  //         Icons.error,
+  //         color: Colors.red,
+  //         size: 64.sp,
+  //       ),
+  //       title: const Text('Error'),
+  //       content: Text(message),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () {
+  //             Navigator.of(context).pop();
+  //           },
+  //           child: const Text('OK'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   // Build SOS button for the nav bar
   Widget _buildNavSosButton() {
